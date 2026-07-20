@@ -272,78 +272,7 @@ local function CreateReliefUI(rayfield)
 end
 
 -- ==========================================
--- STEP 3: Anti-Detection (run before modules)
--- ==========================================
-
--- Compatibility layer for executor-specific globals
-local getrawmetatable = getrawmetatable or nil
-local setreadonly = setreadonly or nil
-local hookmetamethod = hookmetamethod or nil
-local newcclosure = newcclosure or function(f) return f end
-local getnamecallmethod = getnamecallmethod or nil
-
-local function AntiDetection()
-    if not getrawmetatable or not setreadonly then
-        warn("[AntiDetection] Required functions not available, skipping")
-        return
-    end
-    
-    local mt = getrawmetatable(game)
-    local oldNamecall = mt.__namecall
-    local oldIndex = mt.__index
-    local oldNewindex = mt.__newindex
-    
-    setreadonly(mt, false)
-    
-    mt.__namecall = newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        local args = {...}
-        
-        if method == "Kick" or method == "kick" then
-            return warn("[AntiDetection] Blocked Kick attempt")
-        end
-        
-        if method == "FireServer" or method == "InvokeServer" then
-            local remote = self
-            if remote.Name:lower():find("anticheat") or remote.Name:lower():find("ac") then
-                return warn("[AntiDetection] Blocked suspicious remote:", remote.Name)
-            end
-        end
-        
-        return oldNamecall(self, ...)
-    end)
-    
-    mt.__index = newcclosure(function(self, key)
-        if key == "Kick" or key == "kick" then
-            return function() warn("[AntiDetection] Blocked Kick property access") end
-        end
-        return oldIndex(self, key)
-    end)
-    
-    setreadonly(mt, true)
-    
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    
-    local oldKick = LocalPlayer.Kick
-    LocalPlayer.Kick = function(self, ...)
-        warn("[AntiDetection] Kick attempt blocked")
-    end
-    
-    for _, v in pairs(getgc(true)) do
-        if type(v) == "function" then
-            local info = debug.getinfo(v)
-            if info.name and info.name:lower():find("kick") then
-                local old = v
-                local new = function(...) warn("[AntiDetection] Blocked kick function") end
-                pcall(function() hookfunction(old, new) end)
-            end
-        end
-    end
-end
-
--- ==========================================
--- STEP 4: Main Initialization
+-- STEP 3: Main Initialization
 -- ==========================================
 local Relief = nil
 local Loaded = false
@@ -366,9 +295,6 @@ Relief.addCategory("Render", 13321848320)
 Relief.addCategory("Player", 16149111731)
 Relief.addCategory("World", 17640958405)
 Relief.addCategory("Utility", 1538581893)
-
--- 4. Anti-detection
-AntiDetection()
 
 -- 5. NOW safe to load modules (they can use Relief.addModule)
 local Init = LoadModule("Core/Init.lua")
