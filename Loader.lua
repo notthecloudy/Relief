@@ -122,11 +122,12 @@ local function CreateReliefUI(rayfield)
                 Hidden = hidden
             }
             
-            local section = cat:CreateSection(name)
-            local toggle = section:CreateToggle({
-                Name = name,
-                CurrentValue = false,
-                Callback = function(value)
+            -- Use tab:CreateToggle directly (Rayfield Gen2 API)
+            local toggle = cat:CreateToggle({
+                name = name,
+                flag = moduleId .. "_Enabled",
+                value = false,
+                callback = function(value)
                     moduleData.Toggled = value
                     if callback then
                         pcall(callback, value)
@@ -137,47 +138,53 @@ local function CreateReliefUI(rayfield)
             if settings then
                 for _, setting in ipairs(settings) do
                     if setting.Type == "Slider" then
-                        section:CreateSlider({
-                            Name = setting.Title,
-                            Range = {setting.Min or 0, setting.Max or 100},
-                            Increment = setting.Increment or 1,
-                            CurrentValue = setting.Default or setting.Min or 0,
-                            Callback = setting.Callback or function() end
+                        cat:CreateSlider({
+                            name = setting.Title,
+                            flag = moduleId .. "_" .. setting.Title,
+                            min = setting.Min or 0,
+                            max = setting.Max or 100,
+                            increment = setting.Increment or 1,
+                            value = setting.Default or setting.Min or 0,
+                            callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Toggle" then
-                        section:CreateToggle({
-                            Name = setting.Title,
-                            CurrentValue = setting.Default or false,
-                            Callback = setting.Callback or function() end
+                        cat:CreateToggle({
+                            name = setting.Title,
+                            flag = moduleId .. "_" .. setting.Title,
+                            value = setting.Default or false,
+                            callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Dropdown" then
-                        section:CreateDropdown({
-                            Name = setting.Title,
-                            Options = setting.Options or {},
-                            CurrentOption = setting.Default and {setting.Default} or {},
-                            Callback = setting.Callback or function() end
+                        cat:CreateDropdown({
+                            name = setting.Title,
+                            flag = moduleId .. "_" .. setting.Title,
+                            options = setting.Options or {},
+                            value = setting.Default,
+                            callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "TextBox" then
-                        section:CreateInput({
-                            Name = setting.Title,
-                            PlaceholderText = setting.Placeholder or "",
-                            CurrentValue = setting.Default or "",
-                            Callback = setting.Callback or function() end
+                        cat:CreateInput({
+                            name = setting.Title,
+                            flag = moduleId .. "_" .. setting.Title,
+                            placeholder = setting.Placeholder or "",
+                            value = setting.Default or "",
+                            callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Button" then
-                        section:CreateButton({
-                            Name = setting.Title,
-                            Callback = setting.Callback or function() end
+                        cat:CreateButton({
+                            name = setting.Title,
+                            callback = setting.Callback or function() end
                         })
                     end
                 end
             end
             
             if keybind then
-                section:CreateKeybind({
-                    Name = name .. " Keybind",
-                    CurrentKeybind = keybind,
-                    Callback = function()
+                cat:CreateKeybind({
+                    name = name .. " Keybind",
+                    flag = moduleId .. "_Keybind",
+                    key = keybind,
+                    callback = function()
                         moduleData.Toggled = not moduleData.Toggled
                         toggle:Set(moduleData.Toggled)
                     end
