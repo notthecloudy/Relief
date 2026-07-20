@@ -51,13 +51,34 @@ local function LoadRayfield()
         return game:HttpGet("https://sirius.menu/gen2")
     end)
     
-    if success and result then
-        local rayfield = loadstring(result)()
-        return rayfield
+    if not success or not result then
+        warn("[Loader] HTTP Fetch failed:", result)
+        return nil
     end
-    
-    warn("[Loader] Failed to load Rayfield, using fallback UI")
-    return nil
+
+    local compiledFunc, compileError = loadstring(result)
+    if not compiledFunc then
+        warn("[Loader] Compilation failed:", compileError)
+        return nil
+    end
+
+    local runSuccess, runResult = pcall(compiledFunc)
+    if not runSuccess then
+        warn("[Loader] Execution crashed:", runResult)
+        return nil
+    elseif type(runResult) ~= "table" then
+        -- Rayfield might load into globals instead of returning
+        if _G.Rayfield then
+            return _G.Rayfield
+        elseif shared.Rayfield then
+            return shared.Rayfield
+        else
+            warn("[Loader] Rayfield did not return a valid table! Got type:", type(runResult))
+            return nil
+        end
+    else
+        return runResult
+    end
 end
 
 local function CreateReliefUI(rayfield)
@@ -73,7 +94,7 @@ local function CreateReliefUI(rayfield)
             },
             discord = {
                 enabled = true,
-                invite = "msFnMfhuhV",
+                invite = "aZfFCkqYyA",
                 rememberJoins = true
             },
             keySystem = false
@@ -440,7 +461,7 @@ local function Initialize()
     local LocalPlayer = Players.LocalPlayer
     
     if setclipboard then
-        setclipboard("discord.gg/msFnMfhuhV")
+        setclipboard("discord.gg/aZfFCkqYyA")
     end
     
     local req = syn and syn.request or request or http_request or fluxus and fluxus.request or httprequest
@@ -455,7 +476,7 @@ local function Initialize()
                 },
                 Body = HttpService:JSONEncode({
                     cmd = "INVITE_BROWSER",
-                    args = {code = "msFnMfhuhV"},
+                    args = {code = "aZfFCkqYyA"},
                     nonce = HttpService:GenerateGUID(false)
                 })
             })
@@ -503,7 +524,7 @@ local function Initialize()
     
     if GameRegistry then GameRegistry.AutoLoad() end
     
-    Relief.Notify("Relief Hub v2.0 Loaded | discord.gg/msFnMfhuhV", 5, Color3.new(0, 1, 0))
+    Relief.Notify("Relief Hub v2.0 Loaded | discord.gg/aZfFCkqYyA", 5, Color3.new(0, 1, 0))
     
     Loaded = true
 end
