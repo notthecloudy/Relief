@@ -29,46 +29,42 @@ end
 
 -- ==========================================
 -- STEP 1: Load Rayfield Library first
--- ==========================================
 local function LoadRayfield()
-    -- Clear any old cached instances from Xeno's global thread stack
-    if getgenv then
-        getgenv().Rayfield = nil
-    end
-    _G.Rayfield = nil
-
-    local success, result = pcall(function()
-        -- Pull from the stable GitHub raw source link
-        return game:HttpGet("https://githubusercontent.com" .. os.time())
-    end)
+    local urls = {
+        "https://sirius.menu/gen2",
+        "https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua",
+    }
     
-    if not success or not result or result:find("^%s*<") then
-        warn("[Xeno Loader] Failed to pull source data from network.")
-        return nil
-    end
-    
-    local compiledFunc, compileError = loadstring(result)
-    if not compiledFunc then
-        warn("[Xeno Loader] Script failed compilation check:", compileError)
-        return nil
-    end
-
-    -- Fire the script in the current environment block
-    pcall(compiledFunc)
-    
-    -- SYSTEM OVERRIDE FOR XENO: 
-    -- Directly capture the table from the global environment thread state
-    local finalLib = (getgenv and getgenv().Rayfield) or _G.Rayfield or shared.Rayfield
-    
-    if not finalLib or type(finalLib) ~= "table" then
-        warn("[Xeno Loader] Rayfield failed to map to global memory allocation context!")
-        return nil
+    for _, url in ipairs(urls) do
+        local success, result = pcall(function()
+            -- Safe URL formatting check
+            local connector = url:find("%?") and "&" or "?"
+            local cleanURL = url .. connector .. "t=" .. os.time()
+            return game:HttpGet(cleanURL)
+        end)
+        
+        if success and result and not result:find("^%s*<") and #result > 0 then
+            local compiledFunc, compileError = loadstring(result)
+            if compiledFunc then
+                local runSuccess, runResult = pcall(compiledFunc)
+                
+                local targetLib = (type(runResult) == "table" and runResult) 
+                    or _G.Rayfield 
+                    or shared.Rayfield 
+                    or (getgenv and getgenv().Rayfield)
+                
+                if targetLib and type(targetLib) == "table" then
+                    print("[Loader] Successfully loaded Rayfield framework library via source link:", url)
+                    return targetLib
+                end
+            end
+        end
+        warn("[Loader] Source failed or returned invalid data structure block:", url)
     end
     
-    print("[Xeno Loader] Interface framework successfully attached to global thread memory!")
-    return finalLib
+    warn("[Loader] Critical Failure: All configured Rayfield source repository URLs failed!")
+    return nil
 end
-
 
 -- ==========================================
 -- STEP 2: Create Relief UI Wrapper (Rayfield Gen2 API)
