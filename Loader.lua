@@ -341,23 +341,32 @@ if setclipboard then
     setclipboard("discord.gg/msFnMfhuhV")
 end
 
-local req = syn and syn.request or request or http_request or fluxus and fluxus.request or httprequest
-if req then
+-- Safe Discord RPC block with proper operator precedence
+local req = (syn and syn.request) 
+            or request 
+            or http_request 
+            or (fluxus and fluxus.request) 
+            or httprequest
+if type(req) == "function" then
     task.spawn(function()
-        req({
-            Url = "http://127.0.0.1:6463/rpc?v=1",
-            Method = "POST",
-            Headers = {
-                ["Content-Type"] = "application/json",
-                ["Origin"] = "https://discord.com",
-            },
-            Body = HttpService:JSONEncode({
-                cmd = "INVITE_BROWSER",
-                args = { code = "msFnMfhuhV" },
-                nonce = HttpService:GenerateGUID(false)
+        pcall(function()
+            req({
+                Url = "http://127.0.0.1:6463/rpc?v=1",
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json",
+                    ["Origin"] = "https://discord.com",
+                },
+                Body = HttpService:JSONEncode({
+                    cmd = "INVITE_BROWSER",
+                    args = { code = "msFnMfhuhV" },
+                    nonce = HttpService:GenerateGUID(false)
+                })
             })
-        })
+        end)
     end)
+else
+    warn("[Loader Warning] Executor does not support HTTP requests. Skipping Discord auto-invite.")
 end
 
 local function HookChat()
