@@ -274,7 +274,20 @@ end
 -- ==========================================
 -- STEP 3: Anti-Detection (run before modules)
 -- ==========================================
+
+-- Compatibility layer for executor-specific globals
+local getrawmetatable = getrawmetatable or nil
+local setreadonly = setreadonly or nil
+local hookmetamethod = hookmetamethod or nil
+local newcclosure = newcclosure or function(f) return f end
+local getnamecallmethod = getnamecallmethod or nil
+
 local function AntiDetection()
+    if not getrawmetatable or not setreadonly then
+        warn("[AntiDetection] Required functions not available, skipping")
+        return
+    end
+    
     local mt = getrawmetatable(game)
     local oldNamecall = mt.__namecall
     local oldIndex = mt.__index
