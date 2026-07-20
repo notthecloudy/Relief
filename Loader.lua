@@ -43,14 +43,12 @@ local Commands = LoadModule("Modules/Universal/Commands.lua")
 
 local GameRegistry = LoadModule("Games/GameRegistry.lua")
 
-local RayfieldWrapper = LoadModule("UI/RayfieldWrapper.lua")
-
 local Relief = nil
 local Loaded = false
 
 local function LoadRayfield()
     local success, result = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua")
+        return game:HttpGet("https://sirius.menu/gen2")
     end)
     
     if success and result then
@@ -65,20 +63,20 @@ end
 local function CreateReliefUI(rayfield)
     if rayfield then
         local Window = rayfield:CreateWindow({
-            Name = "Relief Hub v2.0",
-            LoadingTitle = "Relief Hub",
-            LoadingSubtitle = "by Atlas",
-            ConfigurationSaving = {
-                Enabled = true,
-                FolderName = "ReliefHub",
-                FileName = "Config"
+            name = "Relief Hub v2.0",
+            loadingTitle = "Relief Hub",
+            loadingSubtitle = "by Atlas",
+            configurationSaving = {
+                enabled = true,
+                folderName = "ReliefHub",
+                fileName = "Config"
             },
-            Discord = {
-                Enabled = true,
-                Invite = "msFnMfhuhV",
-                RememberJoins = true
+            discord = {
+                enabled = true,
+                invite = "msFnMfhuhV",
+                rememberJoins = true
             },
-            KeySystem = false
+            keySystem = false
         })
         
         local ReliefWrapper = {}
@@ -141,10 +139,10 @@ local function CreateReliefUI(rayfield)
                         cat:CreateSlider({
                             name = setting.Title,
                             flag = moduleId .. "_" .. setting.Title,
-                            min = setting.Min or 0,
-                            max = setting.Max or 100,
+                            range = {setting.Min or 0, setting.Max or 100},
                             increment = setting.Increment or 1,
                             value = setting.Default or setting.Min or 0,
+                            suffix = setting.Suffix or "",
                             callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Toggle" then
@@ -160,6 +158,7 @@ local function CreateReliefUI(rayfield)
                             flag = moduleId .. "_" .. setting.Title,
                             options = setting.Options or {},
                             value = setting.Default,
+                            multiSelect = setting.Multiple or false,
                             callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "TextBox" then
@@ -168,11 +167,20 @@ local function CreateReliefUI(rayfield)
                             flag = moduleId .. "_" .. setting.Title,
                             placeholder = setting.Placeholder or "",
                             value = setting.Default or "",
+                            numeric = setting.Numeric or false,
                             callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Button" then
                         cat:CreateButton({
                             name = setting.Title,
+                            callback = setting.Callback or function() end
+                        })
+                    elseif setting.Type == "Keybind" then
+                        cat:CreateKeybind({
+                            name = setting.Title,
+                            flag = moduleId .. "_" .. setting.Title,
+                            value = setting.Default or "None",
+                            hold = setting.Hold or false,
                             callback = setting.Callback or function() end
                         })
                     end
@@ -183,7 +191,7 @@ local function CreateReliefUI(rayfield)
                 cat:CreateKeybind({
                     name = name .. " Keybind",
                     flag = moduleId .. "_Keybind",
-                    key = keybind,
+                    value = keybind,
                     callback = function()
                         moduleData.Toggled = not moduleData.Toggled
                         toggle:Set(moduleData.Toggled)
@@ -233,11 +241,11 @@ local function CreateReliefUI(rayfield)
         end
         
         function ReliefWrapper.Notify(text, duration, color)
-            rayfield:Notify({
-                Title = "Relief Hub",
-                Content = text,
-                Duration = duration or 5,
-                Image = color and "circle-alert" or "info"
+            Window:Notify({
+                title = "Relief Hub",
+                content = text,
+                duration = duration or 5,
+                icon = color and "circle-alert" or "info"
             })
         end
         
