@@ -123,7 +123,7 @@ local function CreateReliefUI(rayfield)
             }
             
             local section = cat:CreateSection(name)
-            local toggle = section:CreateToggle({
+            local toggle = section:AddToggle({
                 Name = name,
                 CurrentValue = false,
                 Callback = function(value)
@@ -137,7 +137,7 @@ local function CreateReliefUI(rayfield)
             if settings then
                 for _, setting in ipairs(settings) do
                     if setting.Type == "Slider" then
-                        section:CreateSlider({
+                        section:AddSlider({
                             Name = setting.Title,
                             Range = {setting.Min or 0, setting.Max or 100},
                             Increment = setting.Increment or 1,
@@ -145,27 +145,27 @@ local function CreateReliefUI(rayfield)
                             Callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Toggle" then
-                        section:CreateToggle({
+                        section:AddToggle({
                             Name = setting.Title,
                             CurrentValue = setting.Default or false,
                             Callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Dropdown" then
-                        section:CreateDropdown({
+                        section:AddDropdown({
                             Name = setting.Title,
                             Options = setting.Options or {},
                             CurrentOption = setting.Default and {setting.Default} or {},
                             Callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "TextBox" then
-                        section:CreateInput({
+                        section:AddInput({
                             Name = setting.Title,
                             PlaceholderText = setting.Placeholder or "",
                             CurrentValue = setting.Default or "",
                             Callback = setting.Callback or function() end
                         })
                     elseif setting.Type == "Button" then
-                        section:CreateButton({
+                        section:AddButton({
                             Name = setting.Title,
                             Callback = setting.Callback or function() end
                         })
@@ -174,7 +174,7 @@ local function CreateReliefUI(rayfield)
             end
             
             if keybind then
-                section:CreateKeybind({
+                section:AddKeybind({
                     Name = name .. " Keybind",
                     CurrentKeybind = keybind,
                     Callback = function()
