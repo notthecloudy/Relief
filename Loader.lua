@@ -1,26 +1,49 @@
-local Core = script.Core
-local Modules = script.Modules
-local Games = script.Games
-local UI = script.UI
+local BASE_URL = "https://raw.githubusercontent.com/notthecloudy/Relief/main/"
 
-local Init = require(Core.Init)
-local Services = require(Core.Services)
-local Thread = require(Core.Thread)
-local Utilities = require(Core.Utilities)
-local Character = require(Core.Character)
-local Whitelist = require(Core.Whitelist)
+local function HttpGet(path)
+    local success, result = pcall(function()
+        return game:HttpGet(BASE_URL .. path)
+    end)
+    if success and result then
+        return result
+    end
+    warn("[Loader] Failed to fetch:", path)
+    return nil
+end
 
-local Movement = require(Modules.Universal.Movement)
-local Combat = require(Modules.Universal.Combat)
-local Render = require(Modules.Universal.Render)
-local Player = require(Modules.Universal.Player)
-local World = require(Modules.Universal.World)
-local Utility = require(Modules.Universal.Utility)
-local Commands = require(Modules.Universal.Commands)
+local function LoadModule(path)
+    local source = HttpGet(path)
+    if source then
+        local fn, err = loadstring(source)
+        if fn then
+            local ok, result = pcall(fn)
+            if ok then return result end
+            warn("[Loader] Error executing " .. path .. ":", result)
+        else
+            warn("[Loader] Error compiling " .. path .. ":", err)
+        end
+    end
+    return nil
+end
 
-local GameRegistry = require(Games.GameRegistry)
+local Init = LoadModule("Core/Init.lua")
+local Services = LoadModule("Core/Services.lua")
+local Thread = LoadModule("Core/Thread.lua")
+local Utilities = LoadModule("Core/Utilities.lua")
+local Character = LoadModule("Core/Character.lua")
+local Whitelist = LoadModule("Core/Whitelist.lua")
 
-local RayfieldWrapper = require(UI.RayfieldWrapper)
+local Movement = LoadModule("Modules/Universal/Movement.lua")
+local Combat = LoadModule("Modules/Universal/Combat.lua")
+local Render = LoadModule("Modules/Universal/Render.lua")
+local Player = LoadModule("Modules/Universal/Player.lua")
+local World = LoadModule("Modules/Universal/World.lua")
+local Utility = LoadModule("Modules/Universal/Utility.lua")
+local Commands = LoadModule("Modules/Universal/Commands.lua")
+
+local GameRegistry = LoadModule("Games/GameRegistry.lua")
+
+local RayfieldWrapper = LoadModule("UI/RayfieldWrapper.lua")
 
 local Relief = nil
 local Loaded = false
@@ -374,13 +397,13 @@ local function Initialize()
     Relief = CreateReliefUI(rayfield)
     getgenv().Relief = Relief
     
-    Movement.Init(Relief)
-    Combat.Init(Relief)
-    Render.Init(Relief)
-    Player.Init(Relief)
-    World.Init(Relief)
-    Utility.Init(Relief)
-    Commands.Init(Relief)
+    if Movement then Movement.Init(Relief) end
+    if Combat then Combat.Init(Relief) end
+    if Render then Render.Init(Relief) end
+    if Player then Player.Init(Relief) end
+    if World then World.Init(Relief) end
+    if Utility then Utility.Init(Relief) end
+    if Commands then Commands.Init(Relief) end
     
     local HttpService = game:GetService("HttpService")
     local TextChatService = game:GetService("TextChatService")
@@ -432,7 +455,7 @@ local function Initialize()
             local cmdName = args[1]:lower()
             table.remove(args, 1)
             
-            local cmd = Commands.Get(cmdName)
+            local cmd = Commands and Commands.Get(cmdName)
             if cmd then
                 task.spawn(function()
                     pcall(cmd, args)
@@ -449,7 +472,7 @@ local function Initialize()
         end
     end)
     
-    GameRegistry.AutoLoad()
+    if GameRegistry then GameRegistry.AutoLoad() end
     
     Relief.Notify("Relief Hub v2.0 Loaded | discord.gg/msFnMfhuhV", 5, Color3.new(0, 1, 0))
     
