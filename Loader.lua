@@ -70,26 +70,26 @@ local function LoadRayfield()
 end
 
 -- ==========================================
--- STEP 2: Create Relief UI Wrapper
+-- STEP 2: Create Relief UI Wrapper (Rayfield Gen2 API)
 -- ==========================================
 local function CreateReliefUI(rayfield)
     if not rayfield then return nil end
     
     local Window = rayfield:CreateWindow({
-        Name = "Relief Hub v2.0",
-        LoadingTitle = "Relief Hub",
-        LoadingSubtitle = "by Atlas",
-        ConfigurationSaving = {
+        name = "Relief Hub v2.0",
+        loadingTitle = "Relief Hub",
+        loadingSubtitle = "by Atlas",
+        configurationSaving = {
             Enabled = true,
             FolderName = "ReliefHub",
             FileName = "Config"
         },
-        Discord = {
+        discord = {
             Enabled = true,
             Invite = "msFnMfhuhV",
             RememberJoins = true
         },
-        KeySystem = false
+        keySystem = false
     })
     
     local ReliefWrapper = {}
@@ -101,7 +101,7 @@ local function CreateReliefUI(rayfield)
     ReliefWrapper.Commands = {}
     
     function ReliefWrapper.addCategory(name, icon)
-        local tab = Window:CreateTab(name, icon)
+        local tab = Window:CreateTab({ name = name, icon = icon })
         ReliefWrapper.Categories[name] = tab
         return tab
     end
@@ -117,7 +117,7 @@ local function CreateReliefUI(rayfield)
                 World = 17640958405,
                 Utility = 1538581893,
             }
-            cat = Window:CreateTab(category, icons[category] or 1538581893)
+            cat = Window:CreateTab({ name = category, icon = icons[category] or 1538581893 })
             ReliefWrapper.Categories[category] = cat
         end
         
@@ -132,12 +132,11 @@ local function CreateReliefUI(rayfield)
             Hidden = hidden
         }
         
-        -- Use tab:CreateToggle directly (Rayfield classic API)
         local toggle = cat:CreateToggle({
-            Name = name,
-            CurrentValue = false,
-            Flag = moduleId .. "_Enabled",
-            Callback = function(value)
+            name = name,
+            flag = moduleId .. "_Enabled",
+            value = false,
+            callback = function(value)
                 moduleData.Toggled = value
                 if callback then
                     pcall(callback, value)
@@ -149,42 +148,43 @@ local function CreateReliefUI(rayfield)
             for _, setting in ipairs(settings) do
                 if setting.Type == "Slider" then
                     cat:CreateSlider({
-                        Name = setting.Title,
-                        Range = {setting.Min or 0, setting.Max or 100},
-                        Increment = setting.Increment or 1,
-                        CurrentValue = setting.Default or setting.Min or 0,
-                        Suffix = setting.Suffix or "",
-                        Flag = moduleId .. "_" .. setting.Title,
-                        Callback = setting.Callback or function() end
+                        name = setting.Title,
+                        flag = moduleId .. "_" .. setting.Title,
+                        range = { setting.Min or 0, setting.Max or 100 },
+                        increment = setting.Increment or 1,
+                        value = setting.Default or setting.Min or 0,
+                        suffix = setting.Suffix or "",
+                        callback = setting.Callback or function() end
                     })
                 elseif setting.Type == "Toggle" then
                     cat:CreateToggle({
-                        Name = setting.Title,
-                        CurrentValue = setting.Default or false,
-                        Flag = moduleId .. "_" .. setting.Title,
-                        Callback = setting.Callback or function() end
+                        name = setting.Title,
+                        flag = moduleId .. "_" .. setting.Title,
+                        value = setting.Default or false,
+                        callback = setting.Callback or function() end
                     })
                 elseif setting.Type == "Dropdown" then
                     cat:CreateDropdown({
-                        Name = setting.Title,
-                        Options = setting.Options or {},
-                        CurrentOption = setting.Default and {setting.Default} or {},
-                        MultiOptions = setting.Multiple or false,
-                        Flag = moduleId .. "_" .. setting.Title,
-                        Callback = setting.Callback or function() end
+                        name = setting.Title,
+                        flag = moduleId .. "_" .. setting.Title,
+                        options = setting.Options or {},
+                        currentOption = setting.Default and { setting.Default } or {},
+                        multiSelect = setting.Multiple or false,
+                        callback = setting.Callback or function() end
                     })
                 elseif setting.Type == "TextBox" then
                     cat:CreateInput({
-                        Name = setting.Title,
-                        PlaceholderText = setting.Placeholder or "",
-                        RemoveTextAfterFocusLost = false,
-                        Flag = moduleId .. "_" .. setting.Title,
-                        Callback = setting.Callback or function() end
+                        name = setting.Title,
+                        flag = moduleId .. "_" .. setting.Title,
+                        placeholder = setting.Placeholder or "",
+                        value = setting.Default or "",
+                        numeric = setting.Numeric or false,
+                        callback = setting.Callback or function() end
                     })
                 elseif setting.Type == "Button" then
                     cat:CreateButton({
-                        Name = setting.Title,
-                        Callback = setting.Callback or function() end
+                        name = setting.Title,
+                        callback = setting.Callback or function() end
                     })
                 end
             end
@@ -192,15 +192,15 @@ local function CreateReliefUI(rayfield)
         
         if keybind then
             cat:CreateKeybind({
-                Name = name .. " Keybind",
-                CurrentKeybind = keybind,
-                HoldToInteract = false,
-                Flag = moduleId .. "_Keybind",
-                Callback = function()
+                name = name .. " Keybind",
+                flag = moduleId .. "_Keybind",
+                key = keybind,
+                hold = false,
+                callback = function()
                     moduleData.Toggled = not moduleData.Toggled
                     toggle:Set(moduleData.Toggled)
                 end
-            })
+            end)
         end
         
         ReliefWrapper.Modules[moduleId] = moduleData
@@ -234,7 +234,7 @@ local function CreateReliefUI(rayfield)
     end
     
     function ReliefWrapper.AddCommand(names, callback)
-        local cmdNames = type(names) == "table" and names or {names}
+        local cmdNames = type(names) == "table" and names or { names }
         for _, name in ipairs(cmdNames) do
             ReliefWrapper.Commands[name:lower()] = callback
         end
@@ -245,16 +245,16 @@ local function CreateReliefUI(rayfield)
     end
     
     function ReliefWrapper.Notify(text, duration, color)
-        rayfield:Notify({
-            Title = "Relief Hub",
-            Content = text,
-            Duration = duration or 5,
-            Image = color and "circle-alert" or "info"
+        Window:Notify({
+            title = "Relief Hub",
+            content = text,
+            duration = duration or 5,
+            image = color and "circle-alert" or "info"
         })
     end
     
     function ReliefWrapper.Recolor(color)
-        Window.ModifyTheme({Default = color})
+        Window:ModifyTheme({ Default = color })
     end
     
     function ReliefWrapper.KillScript()
@@ -263,7 +263,7 @@ local function CreateReliefUI(rayfield)
                 pcall(module.Callback, false)
             end
         end
-        rayfield:Destroy()
+        Window:Destroy()
     end
     
     function ReliefWrapper.AutoSaveName(name)
@@ -349,7 +349,7 @@ if req then
             },
             Body = HttpService:JSONEncode({
                 cmd = "INVITE_BROWSER",
-                args = {code = "msFnMfhuhV"},
+                args = { code = "msFnMfhuhV" },
                 nonce = HttpService:GenerateGUID(false)
             })
         })
@@ -392,6 +392,7 @@ end
 local UserInputService = game:GetService("UserInputService")
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if not gameProcessed and input.KeyCode == Enum.KeyCode.Semicolon then
+        -- semicolon key pressed
     end
 end)
 
@@ -400,6 +401,5 @@ if GameRegistry then GameRegistry.AutoLoad() end
 Relief.Notify("Relief Hub v2.0 Loaded | discord.gg/msFnMfhuhV", 5, Color3.new(0, 1, 0))
 
 Loaded = true
-print("[Relief] Script completely initialized!")
 
 return Relief
