@@ -385,7 +385,14 @@ end
 local function Initialize()
     if Loaded then return end
     
-    AntiDetection()
+    -- Anti-detection config (hidden, disabled by default)
+    local AntiDetectionEnabled = false
+    if Relief and Relief.getSetting then
+        AntiDetectionEnabled = Relief.getSetting("__Internal", "AntiDetection") or false
+    end
+    if AntiDetectionEnabled then
+        AntiDetection()
+    end
     
     local rayfield = LoadRayfield()
     Relief = CreateReliefUI(rayfield)
