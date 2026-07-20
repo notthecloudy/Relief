@@ -6,7 +6,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local LocalPlayer = Players.LocalPlayer
 local Thread = getgenv().Thread
-local Character = getgenv().Character or require(script.Parent.Parent.Core.Character)
+local Character = getgenv().Character
 
 World.Modules = {}
 
@@ -122,7 +122,7 @@ function World.CreateModules()
     local ChatSpamEnabled = false
     local ChatSpamConnection = nil
 
-    local Utilities = require(script.Parent.Parent.Core.Utilities)
+    local Utilities = getgenv().Utilities
 
     World.Modules.ChatSpam = Relief.addModule("World", "ChatSpam", function(enabled)
         if enabled then
@@ -280,5 +280,7 @@ function World.Cleanup()
     end
     World.Modules = {}
 end
+
+getgenv().World = World
 
 return World

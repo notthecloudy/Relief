@@ -7,7 +7,7 @@ local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
 local Thread = getgenv().Thread
-local Character = getgenv().Character or require(script.Parent.Parent.Core.Character)
+local Character = getgenv().Character
 
 Utility.Modules = {}
 
@@ -320,5 +320,7 @@ function Utility.Cleanup()
     end
     Utility.Modules = {}
 end
+
+getgenv().Utility = Utility
 
 return Utility

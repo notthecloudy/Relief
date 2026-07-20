@@ -481,4 +481,6 @@ function Movement.Cleanup()
     Movement.Modules = {}
 end
 
+getgenv().Movement = Movement
+
 return Movement
