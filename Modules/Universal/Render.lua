@@ -72,7 +72,7 @@ function Render.CreateModules()
                         end
                     end
                 end
-                end)
+            end)
         else
             ESPEnabled = false
             if ESPConnection then ESPConnection:Disconnect() ESPConnection = nil end
