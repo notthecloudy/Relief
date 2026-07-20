@@ -385,4 +385,6 @@ function Utilities.Notify(text, duration, color)
 	end
 end
 
+getgenv().Utilities = Utilities
+
 return Utilities

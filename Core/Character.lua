@@ -369,10 +369,12 @@ function Character.OnCharacterRemoved(player, callback)
 end
 
 function Character.Cleanup()
-    for _, conn in Character.Connections do
-        pcall(function() conn:Disconnect() end)
-    end
-    Character.Connections = {}
+	for _, conn in Character.Connections do
+		pcall(function() conn:Disconnect() end)
+	end
+	Character.Connections = {}
 end
+
+getgenv().Character = Character
 
 return Character

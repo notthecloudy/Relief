@@ -112,4 +112,6 @@ function Init.GetRootPart(player)
 	return character:FindFirstChild("HumanoidRootPart")
 end
 
+getgenv().Init = Init
+
 return Init
