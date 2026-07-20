@@ -385,6 +385,10 @@ end
 local function Initialize()
     if Loaded then return end
     
+    local rayfield = LoadRayfield()
+    Relief = CreateReliefUI(rayfield)
+    getgenv().Relief = Relief
+    
     -- Anti-detection config (hidden, disabled by default)
     local AntiDetectionEnabled = false
     if Relief and Relief.getSetting then
@@ -393,10 +397,6 @@ local function Initialize()
     if AntiDetectionEnabled then
         AntiDetection()
     end
-    
-    local rayfield = LoadRayfield()
-    Relief = CreateReliefUI(rayfield)
-    getgenv().Relief = Relief
     
     if Movement then Movement.Init(Relief) end
     if Combat then Combat.Init(Relief) end
