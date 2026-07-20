@@ -397,6 +397,10 @@ local function Initialize()
     local rayfield = LoadRayfield()
     Relief = CreateReliefUI(rayfield)
     getgenv().Relief = Relief
+    _G.Relief = Relief
+    shared.Relief = Relief
+    _G.RayfieldWrapper = rayfield
+    shared.RayfieldWrapper = rayfield
     
     -- Anti-detection config (hidden, disabled by default)
     local AntiDetectionEnabled = false
