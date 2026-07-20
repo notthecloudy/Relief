@@ -382,7 +382,9 @@ local function AntiDetection()
             if info.name and info.name:lower():find("kick") then
                 local old = v
                 local new = function(...) warn("[AntiDetection] Blocked kick function") end
-                pcall(function() hookfunction(old, new) end)
+                if hookfunction then
+                    pcall(function() hookfunction(old, new) end)
+                end
             end
         end
     end
