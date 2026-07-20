@@ -98,8 +98,17 @@ local function CreateReliefUI(rayfield)
         function ReliefWrapper.addModule(category, name, callback, settings, keybind, hidden)
             local cat = ReliefWrapper.Categories[category]
             if not cat then
-                warn("[Relief] Category not found:", category)
-                return
+                -- Auto-create category if it doesn't exist
+                local icons = {
+                    Movement = 1114393432,
+                    Combat = 7485051715,
+                    Render = 13321848320,
+                    Player = 16149111731,
+                    World = 17640958405,
+                    Utility = 1538581893,
+                }
+                cat = Window:CreateTab(category, icons[category] or 1538581893)
+                ReliefWrapper.Categories[category] = cat
             end
             
             local moduleId = category .. "." .. name
