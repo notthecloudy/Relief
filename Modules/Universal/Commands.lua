@@ -3,8 +3,8 @@ local Commands = {}
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
 local Thread = getgenv().Thread
-local Character = getgenv().Character or require(script.Parent.Parent.Core.Character)
-local Utilities = require(script.Parent.Parent.Core.Utilities)
+local Character = getgenv().Character
+local Utilities = getgenv().Utilities
 
 Commands.List = {}
 Commands.Prefix = ";"
@@ -507,7 +507,7 @@ function Commands.RegisterCommands()
     Commands.Register("bypass", {"by"}, function(args)
         local message = table.concat(args, " ")
         if message and message ~= "" then
-            local Utilities = require(script.Parent.Parent.Core.Utilities)
+            local Utilities = getgenv().Utilities
             local Special = utf8.char(0x060D)
             local function ConvertBypass(text)
                 local reverse = text:reverse()
@@ -526,5 +526,9 @@ function Commands.RegisterCommands()
         end
     end, "Send bypassed chat message")
 end
+
+getgenv().Commands = Commands
+getgenv().AddCommand = Commands.Register
+getgenv().GetCommand = Commands.Get
 
 return Commands

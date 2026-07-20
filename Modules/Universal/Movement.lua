@@ -7,7 +7,7 @@ local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 local Thread = getgenv().Thread
-local Character = getgenv().Character or require(script.Parent.Parent.Core.Character)
+local Character = getgenv().Character
 
 Movement.Modules = {}
 
