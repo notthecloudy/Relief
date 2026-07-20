@@ -5,26 +5,26 @@ local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
-local Thread = getgenv().Thread
-local Character = getgenv().Character
 
 Render.Modules = {}
 
 function Render.Init(Relief)
     Render.Relief = Relief
+    Render.Thread = getgenv().Thread
+    Render.Character = getgenv().Character
     Render.CreateModules()
 end
 
 local function getRoot()
-    return Character.GetRootPart()
+    return Render.Character.GetRootPart()
 end
 
 local function getHumanoid()
-    return Character.GetHumanoid()
+    return Render.Character.GetHumanoid()
 end
 
 local function getCharacter()
-    return Character.GetCharacter()
+    return Render.Character.GetCharacter()
 end
 
 function Render.CreateModules()
@@ -154,7 +154,7 @@ function Render.CreateModules()
         {Type = "Toggle", Title = "Rainbow", Callback = function(toggled)
             if toggled then
                 local x = 0
-                local rainbowThread = Thread.New("Rainbow", function()
+                local rainbowThread = Render.Thread.New("Rainbow", function()
                     if not Relief.isToggled("Theme") then return task.wait() end
                     local dt = RunService.RenderStepped:Wait()
                     x = x + (dt / 3)
@@ -166,7 +166,7 @@ function Render.CreateModules()
                     task.wait()
                 end)
             else
-                Thread.Disconnect("Rainbow")
+                Render.Thread.Disconnect("Rainbow")
                 if Relief.isToggled("Theme") then
                     Relief.Recolor(Color3.fromRGB(R, G, B))
                 end
