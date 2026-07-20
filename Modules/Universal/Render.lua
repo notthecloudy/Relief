@@ -71,6 +71,7 @@ function Render.CreateModules()
                             end
                         end
                     end
+                end
                 end)
         else
             ESPEnabled = false
