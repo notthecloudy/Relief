@@ -17,8 +17,15 @@ local function LoadModule(path)
     if source then
         local fn, err = loadstring(source)
         if fn then
+            -- DIAGNOSTIC PRINT: Tells you exactly which file is starting execution
+            print("[Diagnostic] Attempting to execute file:", path)
+            
             local ok, result = pcall(fn)
-            if ok then return result end
+            if ok then 
+                -- DIAGNOSTIC PRINT: Confirms this file didn't crash
+                print("[Diagnostic] Successfully executed:", path)
+                return result 
+            end
             warn("[Loader] Error executing " .. path .. ":", result)
         else
             warn("[Loader] Error compiling " .. path .. ":", err)
