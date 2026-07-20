@@ -368,14 +368,6 @@ local function AntiDetection()
     
     setreadonly(mt, true)
     
-    local Players = game:GetService("Players")
-    local LocalPlayer = Players.LocalPlayer
-    
-    local oldKick = LocalPlayer.Kick
-    LocalPlayer.Kick = function(self, ...)
-        warn("[AntiDetection] Kick attempt blocked")
-    end
-    
     for _, v in pairs(getgc(true)) do
         if type(v) == "function" then
             local info = debug.getinfo(v)
