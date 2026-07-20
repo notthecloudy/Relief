@@ -40,21 +40,27 @@ function GameRegistry.LoadGame(entry)
         return game:HttpGet(url)
     end)
     
-    if success and result then
-        local loadSuccess, loadResult = pcall(function()
-            return loadstring(result)()
-        end)
-        
-        if loadSuccess then
-            GameRegistry.LoadedGame = entry
-            print("[GameRegistry] Loaded game:", entry.DisplayName)
-            return true
-        else
-            warn("[GameRegistry] Failed to execute game script:", loadResult)
-            return false
-        end
+    if not success or not result then
+        warn("[GameRegistry] HTTP Fetch failed:", result)
+        return false
+    end
+    
+    -- Check if response is HTML (404 page)
+    if result:find("^%s*<") then
+        print("[GameRegistry] Game script not found on GitHub (404):", entry.DisplayName)
+        return false
+    end
+    
+    local loadSuccess, loadResult = pcall(function()
+        return loadstring(result)()
+    end)
+    
+    if loadSuccess then
+        GameRegistry.LoadedGame = entry
+        print("[GameRegistry] Loaded game:", entry.DisplayName)
+        return true
     else
-        warn("[GameRegistry] Failed to fetch game script:", result)
+        warn("[GameRegistry] Failed to execute game script:", loadResult)
         return false
     end
 end

@@ -55,7 +55,13 @@ local function LoadRayfield()
         warn("[Loader] HTTP Fetch failed:", result)
         return nil
     end
-
+    
+    -- Check for HTML response
+    if result:find("^%s*<") then
+        warn("[Loader] Rayfield source returned HTML (404?)")
+        return nil
+    end
+    
     local compiledFunc, compileError = loadstring(result)
     if not compiledFunc then
         warn("[Loader] Compilation failed:", compileError)
