@@ -122,7 +122,7 @@ local function CreateReliefUI(rayfield)
                 Hidden = hidden
             }
             
-            local section = cat:CreateSection(name)
+            local section = cat:AddSection(name)
             local toggle = section:AddToggle({
                 Name = name,
                 CurrentValue = false,
@@ -235,7 +235,7 @@ local function CreateReliefUI(rayfield)
         end
         
         function ReliefWrapper.Recolor(color)
-            Window.ModifyTheme({Default = color})
+            Window:ModifyTheme({Default = color})
         end
         
         function ReliefWrapper.KillScript()
