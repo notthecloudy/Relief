@@ -40,7 +40,7 @@ function RayfieldWrapper.Load()
         },
         Discord = {
             Enabled = true,
-            Invite = "msFnMfhuhV",
+            Invite = "aZfFCkqYyA",
             RememberJoins = true
         },
         KeySystem = false

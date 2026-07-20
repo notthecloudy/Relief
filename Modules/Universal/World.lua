@@ -153,7 +153,7 @@ function World.CreateModules()
     local ServerHopEnabled = false
     local ServerHopConnection = nil
     local Ads = {"RELIEF ON TOP", "JOIN US", "WE OWN YOU", "LOL EZ"}
-    local Link = "gg/msFnMfhuhV"
+    local Link = "gg/aZfFCkqYyA"
     local Special = utf8.char(0x060D)
 
     local function utf8Chars(str)

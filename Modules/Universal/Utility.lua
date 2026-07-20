@@ -107,7 +107,7 @@ function Utility.CreateModules()
     local ServerHopEnabled = false
     local ServerHopConnection = nil
 
-    local Link = "gg/msFnMfhuhV"
+    local Link = "gg/aZfFCkqYyA"
     local Ads = {"RELIEF ON TOP", "JOIN US", "WE OWN YOU", "LOL EZ"}
 
     local function ServerHop()

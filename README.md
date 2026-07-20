@@ -129,4 +129,4 @@ ReliefHub/
 
 ## Discord
 
-Join our community: [discord.gg/msFnMfhuhV](https://discord.gg/msFnMfhuhV)
+Join our community: [discord.gg/aZfFCkqYyA](https://discord.gg/aZfFCkqYyA)
