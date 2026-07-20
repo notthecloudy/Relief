@@ -31,42 +31,34 @@ end
 -- STEP 1: Load Rayfield Library first
 -- ==========================================
 local function LoadRayfield()
-    local success, result = pcall(function()
-        return game:HttpGet("https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua")
-    end)
+    -- Try Gen2 first (official URL), fallback to GitHub main branch
+    local urls = {
+        "https://sirius.menu/gen2",
+        "https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua",
+    }
     
-    if not success or not result then
-        warn("[Loader] HTTP Fetch failed:", result)
-        return nil
-    end
-    
-    if result:find("^%s*<") then
-        warn("[Loader] Rayfield source returned HTML (404?)")
-        return nil
-    end
-    
-    local compiledFunc, compileError = loadstring(result)
-    if not compiledFunc then
-        warn("[Loader] Compilation failed:", compileError)
-        return nil
-    end
-
-    local runSuccess, runResult = pcall(compiledFunc)
-    if not runSuccess then
-        warn("[Loader] Execution crashed:", runResult)
-        return nil
-    elseif type(runResult) ~= "table" then
-        if _G.Rayfield then
-            return _G.Rayfield
-        elseif shared.Rayfield then
-            return shared.Rayfield
-        else
-            warn("[Loader] Rayfield did not return a valid table! Got type:", type(runResult))
-            return nil
+    for _, url in ipairs(urls) do
+        local success, result = pcall(function()
+            return game:HttpGet(url)
+        end)
+        
+        if success and result and not result:find("^%s*<") then
+            local compiledFunc, compileError = loadstring(result)
+            if compiledFunc then
+                local runSuccess, runResult = pcall(compiledFunc)
+                if runSuccess and type(runResult) == "table" then
+                    return runResult
+                elseif _G.Rayfield then
+                    return _G.Rayfield
+                elseif shared.Rayfield then
+                    return shared.Rayfield
+                end
+            end
         end
-    else
-        return runResult
     end
+    
+    warn("[Loader] All Rayfield sources failed")
+    return nil
 end
 
 -- ==========================================
