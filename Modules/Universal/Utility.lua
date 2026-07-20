@@ -6,26 +6,26 @@ local TextChatService = game:GetService("TextChatService")
 local HttpService = game:GetService("HttpService")
 local TeleportService = game:GetService("TeleportService")
 local LocalPlayer = Players.LocalPlayer
-local Thread = getgenv().Thread
-local Character = getgenv().Character
 
 Utility.Modules = {}
 
 function Utility.Init(Relief)
     Utility.Relief = Relief
+    Utility.Thread = getgenv().Thread
+    Utility.Character = getgenv().Character
     Utility.CreateModules()
 end
 
 local function getRoot()
-    return Character.GetRootPart()
+    return Utility.Character.GetRootPart()
 end
 
 local function getHumanoid()
-    return Character.GetHumanoid()
+    return Utility.Character.GetHumanoid()
 end
 
 local function getCharacter()
-    return Character.GetCharacter()
+    return Utility.Character.GetCharacter()
 end
 
 local ChatFolder = nil
@@ -83,7 +83,7 @@ function Utility.CreateModules()
         if enabled then
             ChatSpamEnabled = true
             ChatSpamMessage = Relief.getSetting("ChatSpam", "Message") or "relief on top"
-            ChatSpamConnection = Thread.New("ChatSpam", function()
+            ChatSpamConnection = Utility.Thread.New("ChatSpam", function()
                 if not ChatSpamEnabled then return end
                 for i = 1, 10 do
                     task.spawn(function()
@@ -107,7 +107,7 @@ function Utility.CreateModules()
     local ServerHopEnabled = false
     local ServerHopConnection = nil
 
-    local Link = "gg/aZfFCkqYyA"
+    local Link = "gg/msFnMfhuhV"
     local Ads = {"RELIEF ON TOP", "JOIN US", "WE OWN YOU", "LOL EZ"}
 
     local function ServerHop()
@@ -131,7 +131,7 @@ function Utility.CreateModules()
         if enabled then
             AdvertiseEnabled = true
             local x = 0
-            AdvertiseConnection = Thread.New("Advertise", function()
+            AdvertiseConnection = Utility.Thread.New("Advertise", function()
                 for i = 1, 10 do
                     x = x + 1
                     local i = (x % 4)
@@ -149,7 +149,7 @@ function Utility.CreateModules()
         {Type = "Toggle", Title = "AutoServerHop", Callback = function(toggled)
             if toggled then
                 ServerHopEnabled = true
-                ServerHopConnection = Thread.New("ServerHop", function()
+                ServerHopConnection = Utility.Thread.New("ServerHop", function()
                     repeat task.wait() until #Players:GetPlayers() < 6 or not Relief.isToggled("Advertise") or not ServerHopEnabled
                     if not Relief.isToggled("Advertise") or not ServerHopEnabled then return end
                     ServerHop()
@@ -168,14 +168,14 @@ function Utility.CreateModules()
         if enabled then
             AntiVoidEnabled = true
             Workspace.FallenPartsDestroyHeight = 0/0
-            Thread.Maid("AntiVoid", Workspace:GetPropertyChangedSignal("FallenPartsDestroyHeight"):Connect(function()
+            Utility.Thread.Maid("AntiVoid", Workspace:GetPropertyChangedSignal("FallenPartsDestroyHeight"):Connect(function()
                 if Workspace.FallenPartsDestroyHeight ~= 0/0 then
                     Workspace.FallenPartsDestroyHeight = 0/0
                 end
             end))
         else
             AntiVoidEnabled = false
-            Thread.Unmaid("AntiVoid")
+            Utility.Thread.Unmaid("AntiVoid")
         end
     end)
 

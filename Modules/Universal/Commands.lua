@@ -2,15 +2,15 @@ local Commands = {}
 
 local Players = game:GetService("Players")
 local LocalPlayer = Players.LocalPlayer
-local Thread = getgenv().Thread
-local Character = getgenv().Character
-local Utilities = getgenv().Utilities
 
 Commands.List = {}
 Commands.Prefix = ";"
 
 function Commands.Init(Relief)
     Commands.Relief = Relief
+    Commands.Thread = getgenv().Thread
+    Commands.Character = getgenv().Character
+    Commands.Utilities = getgenv().Utilities
     Commands.RegisterCommands()
 end
 
@@ -56,7 +56,7 @@ function Commands.Execute(input)
 end
 
 local function getPlayer(query)
-    return Utilities.GetPlayer(query)
+    return Commands.Utilities.GetPlayer(query)
 end
 
 function Commands.RegisterCommands()
@@ -131,8 +131,8 @@ function Commands.RegisterCommands()
         if not targets or #targets == 0 then return end
         
         local target = targets[1]
-        local char = Character.GetCharacter()
-        local root = Character.GetRootPart()
+        local char = Commands.Character.GetCharacter()
+        local root = Commands.Character.GetRootPart()
         local tRoot = target.Character and target.Character:FindFirstChild("HumanoidRootPart")
         
         if root and tRoot then
@@ -147,7 +147,7 @@ function Commands.RegisterCommands()
         local targets = getPlayer(targetName)
         if not targets or #targets == 0 then return end
         
-        local root = Character.GetRootPart()
+        local root = Commands.Character.GetRootPart()
         if not root then return end
         
         for _, target in targets do
@@ -190,17 +190,17 @@ function Commands.RegisterCommands()
         Workspace.FallenPartsDestroyHeight = 0/0
         
         local LoopFlinging = true
-        local Thread = getgenv().Thread
+        local Thread = Commands.Thread
         
         Thread.New("LoopFling", function()
             task.wait()
             local old = nil
             local flung = false
             
-            local char = Character.GetCharacter()
+            local char = Commands.Character.GetCharacter()
             if not char then return end
             
-            local root = Character.GetRootPart()
+            local root = Commands.Character.GetRootPart()
             if not root then return end
             
             local oldPos = root.CFrame
@@ -218,7 +218,7 @@ function Commands.RegisterCommands()
                             if tHum and not tHum.SeatPart then
                                 local tRoot = tChar:FindFirstChild("HumanoidRootPart")
                                 if tRoot and tRoot.Velocity.Magnitude <= 500 then
-                                    local hum = Character.GetHumanoid()
+                                    local hum = Commands.Character.GetHumanoid()
                                     if hum then
                                         hum:ChangeState(Enum.HumanoidStateType.Physics)
                                         
@@ -248,13 +248,13 @@ function Commands.RegisterCommands()
             
             if not flung then return end
             
-            char = Character.GetCharacter()
+            char = Commands.Character.GetCharacter()
             if not char then return end
             
-            root = Character.GetRootPart()
+            root = Commands.Character.GetRootPart()
             if not root then return end
             
-            hum = Character.GetHumanoid()
+            hum = Commands.Character.GetHumanoid()
             if not hum then return end
             
             repeat
@@ -272,7 +272,7 @@ function Commands.RegisterCommands()
     end, "Loop fling player(s)")
 
     Commands.Register("unloopfling", {"unlf"}, function(args)
-        local Thread = getgenv().Thread
+        local Thread = Commands.Thread
         Thread.Disconnect("LoopFling")
     end, "Stop loop fling")
 
@@ -289,10 +289,10 @@ function Commands.RegisterCommands()
         local old = nil
         local flung = false
         
-        local char = Character.GetCharacter()
+        local char = Commands.Character.GetCharacter()
         if not char then return end
         
-        local root = Character.GetRootPart()
+        local root = Commands.Character.GetRootPart()
         if not root then return end
         
         local oldPos = root.CFrame
@@ -310,7 +310,7 @@ function Commands.RegisterCommands()
                         if tHum then
                             local tRoot = tChar:FindFirstChild("HumanoidRootPart")
                             if tRoot and tRoot.Velocity.Magnitude <= 500 then
-                                local hum = Character.GetHumanoid()
+                                local hum = Commands.Character.GetHumanoid()
                                 if hum then
                                     hum:ChangeState(Enum.HumanoidStateType.Physics)
                                     
@@ -340,13 +340,13 @@ function Commands.RegisterCommands()
         
         if not flung then return end
         
-        char = Character.GetCharacter()
+        char = Commands.Character.GetCharacter()
         if not char then return end
         
-        root = Character.GetRootPart()
+        root = Commands.Character.GetRootPart()
         if not root then return end
         
-        hum = Character.GetHumanoid()
+        hum = Commands.Character.GetHumanoid()
         if not hum then return end
         
         repeat
@@ -375,10 +375,10 @@ function Commands.RegisterCommands()
         local old = nil
         local flung = false
         
-        local char = Character.GetCharacter()
+        local char = Commands.Character.GetCharacter()
         if not char then return end
         
-        local root = Character.GetRootPart()
+        local root = Commands.Character.GetRootPart()
         if not root then return end
         
         local oldPos = root.CFrame
@@ -396,7 +396,7 @@ function Commands.RegisterCommands()
                         if tHum then
                             local tRoot = tChar:FindFirstChild("HumanoidRootPart")
                             if tRoot and tRoot.Velocity.Magnitude <= 500 then
-                                local hum = Character.GetHumanoid()
+                                local hum = Commands.Character.GetHumanoid()
                                 if hum then
                                     hum:ChangeState(Enum.HumanoidStateType.Physics)
                                     
@@ -426,13 +426,13 @@ function Commands.RegisterCommands()
         
         if not flung then return end
         
-        char = Character.GetCharacter()
+        char = Commands.Character.GetCharacter()
         if not char then return end
         
-        root = Character.GetRootPart()
+        root = Commands.Character.GetRootPart()
         if not root then return end
         
-        hum = Character.GetHumanoid()
+        hum = Commands.Character.GetHumanoid()
         if not hum then return end
         
         repeat
@@ -488,26 +488,26 @@ function Commands.RegisterCommands()
     end, "Reset character")
 
     Commands.Register("sit", {}, function()
-        local hum = Character.GetHumanoid()
+        local hum = Commands.Character.GetHumanoid()
         if hum then hum.Sit = true end
     end, "Sit")
 
     Commands.Register("unsit", {}, function()
-        local hum = Character.GetHumanoid()
+        local hum = Commands.Character.GetHumanoid()
         if hum then hum.Sit = false end
     end, "Unsit")
 
     Commands.Register("chat", {"say"}, function(args)
         local message = table.concat(args, " ")
         if message and message ~= "" then
-            Utilities.Chat(message)
+            Commands.Utilities.Chat(message)
         end
     end, "Send chat message")
 
     Commands.Register("bypass", {"by"}, function(args)
         local message = table.concat(args, " ")
         if message and message ~= "" then
-            local Utilities = getgenv().Utilities
+            local Utilities = Commands.Utilities
             local Special = utf8.char(0x060D)
             local function ConvertBypass(text)
                 local reverse = text:reverse()

@@ -6,17 +6,21 @@ local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 local Camera = Workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
-local Thread = getgenv().Thread
-local Character = getgenv().Character
 
 Movement.Modules = {}
 
 function Movement.Init(Relief)
     Movement.Relief = Relief
+    -- Get dependencies at init time, not load time
+    Movement.Thread = getgenv().Thread
+    Movement.Character = getgenv().Character
     Movement.CreateModules()
 end
 
 function Movement.CreateModules()
+    local Thread = Movement.Thread
+    local Character = Movement.Character
+    
     local function getRoot()
         return Character.GetRootPart()
     end
