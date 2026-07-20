@@ -122,7 +122,7 @@ local function CreateReliefUI(rayfield)
                 Hidden = hidden
             }
             
-            local section = cat:AddSection(name)
+            local section = cat:CreateSection(name)
             local toggle = section:AddToggle({
                 Name = name,
                 CurrentValue = false,
