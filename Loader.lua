@@ -2,7 +2,8 @@ local BASE_URL = "https://raw.githubusercontent.com/notthecloudy/Relief/main/"
 
 local function HttpGet(path)
     local success, result = pcall(function()
-        return game:HttpGet(BASE_URL .. path)
+        local cacheBuster = "?t=" .. os.time()
+        return game:HttpGet(BASE_URL .. path .. cacheBuster)
     end)
     if success and result then
         return result
