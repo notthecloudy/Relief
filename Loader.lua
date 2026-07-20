@@ -31,7 +31,6 @@ end
 -- STEP 1: Load Rayfield Library first
 -- ==========================================
 local function LoadRayfield()
-    -- Try Gen2 first (official URL), fallback to GitHub main branch
     local urls = {
         "https://sirius.menu/gen2",
         "https://raw.githubusercontent.com/SiriusSoftwareLtd/Rayfield/main/source.lua",
@@ -39,25 +38,31 @@ local function LoadRayfield()
     
     for _, url in ipairs(urls) do
         local success, result = pcall(function()
-            return game:HttpGet(url)
+            -- Append an os.time query string parameter to bypass corporate caches completely
+            return game:HttpGet(url .. "?t=" .. os.time())
         end)
         
-        if success and result and not result:find("^%s*<") then
+        if success and result and not result:find("^%s*<") and #result > 0 then
             local compiledFunc, compileError = loadstring(result)
             if compiledFunc then
                 local runSuccess, runResult = pcall(compiledFunc)
-                if runSuccess and type(runResult) == "table" then
-                    return runResult
-                elseif _G.Rayfield then
-                    return _G.Rayfield
-                elseif shared.Rayfield then
-                    return shared.Rayfield
+                
+                -- Check for table returns or global variable registrations instantly
+                local targetLib = (type(runResult) == "table" and runResult) 
+                    or _G.Rayfield 
+                    or shared.Rayfield 
+                    or (getgenv and getgenv().Rayfield)
+                
+                if targetLib and type(targetLib) == "table" then
+                    print("[Loader] Successfully loaded Rayfield framework library via source link:", url)
+                    return targetLib
                 end
             end
         end
+        warn("[Loader] Source failed or returned invalid data structure block:", url)
     end
     
-    warn("[Loader] All Rayfield sources failed")
+    warn("[Loader] Critical Failure: All configured Rayfield source repository URLs failed!")
     return nil
 end
 
